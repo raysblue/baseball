@@ -1,0 +1,37 @@
+---
+title: "R ggplot2 패키지를 이용한 데이터 시각화"
+author: "Jung Yeon-Hun"
+date: "2019<eb>/04<ec>/11<ec>"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 2019시즌 박진우 선수 패스트볼 투구 분포 데이터 시각화 
+
+데이터를 기반으로 2019시즌 NC 다이노스 박진우 선수의 투구를 데이터 시각화 자료를 만들고자 합니다.
+
+시각화에 사용할 투구 raw data는 4월 11일까지의 데이터로 내용은 다음과 같습니다. 
+```{r}
+ff <- read.csv("C:/Users/Administrator/Desktop/backup/R/1/ff.csv")
+knitr::kable(ff[1:5, 1:17])
+```
+
+사용한 패키지는 일반적으로 R의 시각화 패키지로 널리 쓰이는 ggplot2, 가상의 스트라이크 존의 사진 파일을 불러오기 위한 png, 마지막으로 히트맵 효과를 주기 위해 grid 패키지를 사용하였습니다. 
+
+```{r}
+library(ggplot2)
+
+library(png)
+
+library(grid)
+
+image <- readPNG("C:/Users/Administrator/Desktop/backup/R/1/s_zone1.png")
+
+ggplot() + annotation_custom(rasterGrob(image, width = unit(1,"npc"), height = unit(1,"npc")), -Inf, Inf, -Inf, Inf) + stat_density_2d(data = ff, aes(x=x, y=y, fill = ..level.., alpha = ..level..,), geom = "polygon")+ theme_minimal()  + xlim(0, 150) + ylim(210, 0) + scale_fill_gradient(low='#fffa00', high='#ff0000') + scale_alpha(range=c(0.01, 0.9), guide=F) + geom_point(data = ff, aes(x=x, y=y),colour = "#ff5454", size = 4, alpha = 0.6)+ theme(axis.text.x=element_blank()) + theme(axis.text.y=element_blank())+xlab("") + ylab("") + coord_fixed(ratio = 1.4)
+
+```
